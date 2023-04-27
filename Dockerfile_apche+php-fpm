@@ -1,0 +1,35 @@
+FROM ubuntu:latest
+
+ENV TZ=Europe/Moscow \
+    DEBIAN_FRONTEND=noninteractive
+
+RUN apt update && apt install -y \
+    tzdata \
+    apache2 \
+    php-fpm \
+    php-mysql \
+    php-gd \
+    php-json \
+    php-curl \
+    php-mbstring \
+    php-xml \
+    php-xmlrpc \
+    php-soap \
+    php-intl \
+    php-zip
+
+RUN a2enmod proxy_fcgi && \
+    a2enconf php8.1-fpm && \
+    a2enmod actions && \
+    a2enmod rewrite && \
+    a2enmod proxy_fcgi && \
+    a2enmod setenvif && \
+    a2dismod mpm_prefork && \
+    a2dismod mpm_worker && \
+    a2enmod mpm_event && \
+    service php8.1-fpm restart && \
+    service apache2 restart
+
+EXPOSE 80
+
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
