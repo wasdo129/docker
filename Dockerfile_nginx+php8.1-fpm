@@ -1,0 +1,38 @@
+docker build -t my-nginx-php8.1 .
+docker run -p 80:80 -d my-nginx-php8.1
+
+FROM ubuntu:latest
+
+ENV TZ=Europe/Moscow \
+    DEBIAN_FRONTEND=noninteractive
+
+RUN apt update && apt install -y \
+    tzdata \
+    nginx \
+    php8.1-fpm \
+    php-mysql \
+    php-gd \
+    php-json \
+    php-curl \
+    php-cli \
+    php-mbstring \
+    php-ldap \
+    php-xml \
+    php-xmlrpc \
+    php-soap \
+    php-intl \
+    php-common \
+    php-zip
+
+RUN service php8.1-fpm restart && \
+    service nginx restart
+
+COPY nginx.conf /etc/nginx/conf.d/
+
+COPY html /var/www/html
+
+WORKDIR /var/www/html
+
+EXPOSE 80
+
+CMD ["sh", "-c", "service php8.1-fpm start && nginx -g 'daemon off;'"]
